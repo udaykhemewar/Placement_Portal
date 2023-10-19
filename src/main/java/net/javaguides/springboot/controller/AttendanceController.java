@@ -3,6 +3,7 @@ package net.javaguides.springboot.controller;
 import net.javaguides.springboot.exception.ResourceNotFoundException;
 import net.javaguides.springboot.model.Attendance;
 import net.javaguides.springboot.repository.AttendanceRepository;
+import net.javaguides.springboot.repository.TotalAttendanceDTO;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+
+import javax.naming.Name;
+import java.util.ArrayList;
 import java.util.List;
-import org.apache.pulsar.client.api.Producer;
-import org.springframework.web.bind.annotation.*;
+
 @RestController
 @RequestMapping("/api/v1/attendance")
 public class AttendanceController {
@@ -99,5 +102,23 @@ public class AttendanceController {
         Attendance attendance = attendanceRepository.findById(attendanceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Attendance not found for this id :: " + attendanceId));
         attendanceRepository.delete(attendance);
+    }
+
+    @GetMapping("/total_attendance")
+    public List<TotalAttendanceDTO> getTotalAttendance() {
+        List<Object[]> results = attendanceRepository.getTotalAttendanceByMonth();
+
+        List<TotalAttendanceDTO> totalAttendanceList = new ArrayList<>();
+
+        for (Object[] result : results) {
+            String Name = (String) result[0];
+            String Month = (String) result[1];
+            Long TotalAttendancee = ((Number) result[2]).longValue();
+
+            TotalAttendanceDTO dto = new TotalAttendanceDTO(Name, Month, TotalAttendancee);
+            totalAttendanceList.add(dto);
+        }
+
+        return totalAttendanceList;
     }
 }
