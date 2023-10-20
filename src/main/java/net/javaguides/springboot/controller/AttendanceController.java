@@ -4,17 +4,20 @@ import net.javaguides.springboot.exception.ResourceNotFoundException;
 import net.javaguides.springboot.model.Attendance;
 import net.javaguides.springboot.repository.AttendanceRepository;
 import net.javaguides.springboot.repository.TotalAttendanceDTO;
+import org.apache.pulsar.client.api.Consumer;
+import org.apache.pulsar.client.api.Message;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
-import javax.naming.Name;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/v1/attendance")
@@ -70,16 +73,38 @@ public class AttendanceController {
 
 
 
+//    @PostMapping("/")
+//    public Attendance createAttendance(@RequestBody Attendance attendance)  {
+//        Attendance savedAttendance = attendanceRepository.save(attendance);
+//        try {
+//            attendanceProducer.send(savedAttendance);
+//        } catch (PulsarClientException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return savedAttendance;
+//    }
+
     @PostMapping("/")
-    public Attendance createAttendance(@RequestBody Attendance attendance)  {
+    @Async
+    public CompletableFuture<Attendance> createAttendanceAsync(@RequestBody Attendance attendance) {
+        CompletableFuture<Attendance> savedAttendanceFuture = saveToDatabaseAsync(attendance);
+        publishToPulsarAsync(attendance);
+        return savedAttendanceFuture;
+    }
+    @Async
+    public CompletableFuture<Attendance> saveToDatabaseAsync(Attendance attendance) {
         Attendance savedAttendance = attendanceRepository.save(attendance);
+        return CompletableFuture.completedFuture(savedAttendance);
+    }
+
+    @Async
+    public void publishToPulsarAsync(Attendance attendance) {
         try {
-            attendanceProducer.send(savedAttendance);
+            attendanceProducer.send(attendance);
         } catch (PulsarClientException e) {
             e.printStackTrace();
         }
-
-        return savedAttendance;
     }
 
     @PutMapping("/{id}")
