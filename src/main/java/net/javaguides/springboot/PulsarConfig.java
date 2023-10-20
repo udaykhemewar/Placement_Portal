@@ -22,15 +22,16 @@ public class PulsarConfig {
                 .topic("attendance-topic")
                 .create();
     }
-//@Bean
-//public Consumer<Attendance> attendanceConsumer() throws PulsarClientException {
-//    PulsarClient pulsarClient = PulsarClient.builder()
-//            .serviceUrl(pulsarServiceUrl)
-//            .build();
-//
-//    return pulsarClient.newConsumer(Schema.JSON(Attendance.class))
-//            .subscriptionName("your-subscription-name")
-//            .subscriptionType(SubscriptionType.Shared)
-//            .subscribe("attendance-topic");
-//}
+@Bean
+public Consumer<Attendance> attendanceConsumer() throws PulsarClientException {
+    PulsarClient pulsarClient = PulsarClient.builder()
+            .serviceUrl(pulsarServiceUrl)
+            .build();
+
+    return pulsarClient.newConsumer(Schema.JSON(Attendance.class))
+            .subscriptionName("your-subscription-name")
+            .subscriptionType(SubscriptionType.Shared)
+            .topic("persistent://public/default/attendance-topic")
+            .subscribe();
+}
 }
