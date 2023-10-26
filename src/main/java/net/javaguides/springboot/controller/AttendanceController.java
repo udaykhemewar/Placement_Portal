@@ -73,39 +73,39 @@ public class AttendanceController {
 
 
 
-//    @PostMapping("/")
-//    public Attendance createAttendance(@RequestBody Attendance attendance)  {
-//        Attendance savedAttendance = attendanceRepository.save(attendance);
-//        try {
-//            attendanceProducer.send(savedAttendance);
-//        } catch (PulsarClientException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return savedAttendance;
-//    }
-
     @PostMapping("/")
-    @Async
-    public CompletableFuture<Attendance> createAttendanceAsync(@RequestBody Attendance attendance) {
-        CompletableFuture<Attendance> savedAttendanceFuture = saveToDatabaseAsync(attendance);
-        publishToPulsarAsync(attendance);
-        return savedAttendanceFuture;
-    }
-    @Async
-    public CompletableFuture<Attendance> saveToDatabaseAsync(Attendance attendance) {
-        Attendance savedAttendance = attendanceRepository.save(attendance);
-        return CompletableFuture.completedFuture(savedAttendance);
-    }
-
-    @Async
-    public void publishToPulsarAsync(Attendance attendance) {
+    public Attendance createAttendance(@RequestBody Attendance attendance)  {
+//        Attendance savedAttendance = attendanceRepository.save(attendance);
         try {
             attendanceProducer.send(attendance);
         } catch (PulsarClientException e) {
             e.printStackTrace();
         }
+
+        return attendance;
     }
+
+//    @PostMapping("/")
+//    @Async
+//    public CompletableFuture<Attendance> createAttendanceAsync(@RequestBody Attendance attendance) {
+//        CompletableFuture<Attendance> savedAttendanceFuture = saveToDatabaseAsync(attendance);
+//        publishToPulsarAsync(attendance);
+//        return savedAttendanceFuture;
+//    }
+//    @Async
+//    public CompletableFuture<Attendance> saveToDatabaseAsync(Attendance attendance) {
+//        Attendance savedAttendance = attendanceRepository.save(attendance);
+//        return CompletableFuture.completedFuture(savedAttendance);
+//    }
+//
+//    @Async
+//    public void publishToPulsarAsync(Attendance attendance) {
+//        try {
+//            attendanceProducer.send(attendance);
+//        } catch (PulsarClientException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Attendance> updateAttendance(@PathVariable(value = "id") Long attendanceId,
