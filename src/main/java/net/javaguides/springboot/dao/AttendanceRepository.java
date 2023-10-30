@@ -1,4 +1,4 @@
-package net.javaguides.springboot.repository;
+package net.javaguides.springboot.dao;
 
 import net.javaguides.springboot.model.Attendance;
 import org.springframework.data.jpa.repository.JpaRepository;

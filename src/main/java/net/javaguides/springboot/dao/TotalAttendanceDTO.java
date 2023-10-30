@@ -1,4 +1,4 @@
-package net.javaguides.springboot.repository;
+package net.javaguides.springboot.dao;
 
 public class TotalAttendanceDTO {
     private String Name;

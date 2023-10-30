@@ -1,26 +1,25 @@
 package net.javaguides.springboot.controller;
 
+import net.javaguides.springboot.dao.AttendanceRepository;
+import net.javaguides.springboot.dao.TotalAttendanceDTO;
 import net.javaguides.springboot.exception.ResourceNotFoundException;
 import net.javaguides.springboot.model.Attendance;
-import net.javaguides.springboot.repository.AttendanceRepository;
-import net.javaguides.springboot.repository.TotalAttendanceDTO;
-import org.apache.pulsar.client.api.Consumer;
-import org.apache.pulsar.client.api.Message;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClientException;
+import org.apache.pulsar.shade.io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/v1/attendance")
+//@Api(value = "Attendance API", description = "Operations pertaining to attendance")
 public class AttendanceController {
 
     private final AttendanceRepository attendanceRepository;
@@ -32,6 +31,7 @@ public class AttendanceController {
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public List<Attendance> getAllAttendance() {
         return attendanceRepository.findAll();
     }
@@ -39,6 +39,7 @@ public class AttendanceController {
 //    private final Logger logger = LoggerFactory.getLogger(AttendanceController.class);
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @Cacheable(value = "attendanceCache", key = "#attendanceId", unless = "#result == null")
 //    public ResponseEntity<Attendance> getAttendanceById(@PathVariable(value = "id") Long attendanceId)
 //            throws ResourceNotFoundException {
@@ -74,7 +75,10 @@ public class AttendanceController {
 
 
     @PostMapping("/")
-    public Attendance createAttendance(@RequestBody Attendance attendance)  {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @ApiOperation(value = "Create a new attendance record")
+    public Attendance createAttendance(@RequestBody Attendance attendance) {
+//            (@ApiParam(value = "Attendance object to be created", required = true)
 //        Attendance savedAttendance = attendanceRepository.save(attendance);
         try {
             attendanceProducer.send(attendance);
@@ -108,6 +112,7 @@ public class AttendanceController {
 //    }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Attendance> updateAttendance(@PathVariable(value = "id") Long attendanceId,
                                                        @RequestBody Attendance attendanceDetails) throws ResourceNotFoundException {
         Attendance attendance = attendanceRepository.findById(attendanceId)
@@ -121,6 +126,7 @@ public class AttendanceController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @CacheEvict(value = "attendanceCache", key = "#attendanceId")
     public void deleteAttendance(@PathVariable(value = "id") Long attendanceId)
             throws ResourceNotFoundException {

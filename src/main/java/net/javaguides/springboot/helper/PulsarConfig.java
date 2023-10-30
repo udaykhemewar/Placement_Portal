@@ -1,5 +1,5 @@
-package net.javaguides.springboot;
-import net.javaguides.springboot.repository.AttendanceRepository;
+package net.javaguides.springboot.helper;
+import net.javaguides.springboot.dao.AttendanceRepository;
 import net.javaguides.springboot.model.Attendance;
 import org.apache.pulsar.client.api.*;
 import org.springframework.beans.factory.annotation.Value;
