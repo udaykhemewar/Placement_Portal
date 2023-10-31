@@ -6,7 +6,9 @@ import net.javaguides.springboot.exception.ResourceNotFoundException;
 import net.javaguides.springboot.model.Attendance;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClientException;
+import org.apache.pulsar.shade.io.swagger.annotations.Api;
 import org.apache.pulsar.shade.io.swagger.annotations.ApiOperation;
+import org.apache.pulsar.shade.io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -19,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/attendance")
-//@Api(value = "Attendance API", description = "Operations pertaining to attendance")
+@Api(value = "Attendance API", description = "Operations pertaining to attendance")
 public class AttendanceController {
 
     private final AttendanceRepository attendanceRepository;
@@ -77,8 +79,8 @@ public class AttendanceController {
     @PostMapping("/")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @ApiOperation(value = "Create a new attendance record")
-    public Attendance createAttendance(@RequestBody Attendance attendance) {
-//            (@ApiParam(value = "Attendance object to be created", required = true)
+    public Attendance createAttendance(@ApiParam(value = "Attendance object to be created", required = true)@RequestBody Attendance attendance) {
+
 //        Attendance savedAttendance = attendanceRepository.save(attendance);
         try {
             attendanceProducer.send(attendance);
