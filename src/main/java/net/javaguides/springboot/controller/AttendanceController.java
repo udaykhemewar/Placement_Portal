@@ -21,11 +21,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/attendance")
-@Api(value = "Attendance API", description = "Operations pertaining to attendance")
+@Api(value = "Attendance API")
 public class AttendanceController {
 
     private final AttendanceRepository attendanceRepository;
-    @Autowired
+//    @Autowired
     private Producer<Attendance> attendanceProducer;
     @Autowired
     public AttendanceController(AttendanceRepository attendanceRepository) {
