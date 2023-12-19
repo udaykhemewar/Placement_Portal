@@ -82,11 +82,11 @@ public class AttendanceController {
     public Attendance createAttendance(@ApiParam(value = "Attendance object to be created", required = true)@RequestBody Attendance attendance) {
 
 //        Attendance savedAttendance = attendanceRepository.save(attendance);
-        try {
-            attendanceProducer.send(attendance);
-        } catch (PulsarClientException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            attendanceProducer.send(attendance);
+//        } catch (PulsarClientException e) {
+//            e.printStackTrace();
+//        }
 
         return attendance;
     }

@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 public class FlywayConfig {
     @Bean
     public Flyway flyway() {
-        Flyway flyway = Flyway.configure().dataSource("jdbc:postgresql://localhost:5432/employees", "postgres", "postgres").load();
+        Flyway flyway = Flyway.configure().dataSource("jdbc:postgresql://localhost:5432/portal", "postgres", "postgres").load();
         flyway.migrate();
         return flyway;
     }
